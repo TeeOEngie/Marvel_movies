@@ -179,8 +179,8 @@ if not model_loaded:
 # ------------------------------------------------------------
 # Tabs
 # ------------------------------------------------------------
-tab_howto, tab_predict, tab_explore, tab_model = st.tabs(
-    ["📖 วิธีใช้งาน", "🔮 ทำนาย", "📊 สำรวจข้อมูล", "🧠 รายละเอียดโมเดล"]
+tab_howto, tab_predict, tab_explore, tab_model, tab_dev = st.tabs(
+    ["📖 วิธีใช้งาน", "🔮 ทำนาย", "📊 สำรวจข้อมูล", "🧠 รายละเอียดโมเดล", "👤 ผู้พัฒนา"]
 )
 
 # ============================================================
@@ -445,6 +445,59 @@ with tab_model:
 
     st.subheader("ค่า Hyperparameter ที่ดีที่สุด (จาก GridSearchCV)")
     st.json(metrics["best_params"])
+
+# ============================================================
+# TAB 5 — ผู้พัฒนา
+# ============================================================
+with tab_dev:
+    col_photo, col_info = st.columns([1, 2])
+
+    with col_photo:
+        # TODO: เปลี่ยนเป็นรูปจริงภายหลัง — วางไฟล์รูปไว้ในโฟลเดอร์เดียวกับ
+        # app.py แล้วเปลี่ยน path ด้านล่าง เช่น st.image("developer.jpg", ...)
+        st.markdown(
+            """
+            <div style="
+                width: 220px; height: 220px; border-radius: 50%;
+                background: linear-gradient(135deg, #ed1d24 0%, #8b0000 100%);
+                display: flex; align-items: center; justify-content: center;
+                font-size: 4rem; color: #ffd700; border: 3px solid #ffd700;
+                margin: 0 auto;">
+                👤
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+        st.caption("<div style='text-align:center;'>ยังไม่ได้ใส่รูป — เพิ่มได้ทีหลัง</div>",
+                    unsafe_allow_html=True)
+
+    with col_info:
+        st.markdown(
+            """
+            <div class="prediction-card" style="text-align:left; padding: 24px 28px;">
+                <div class="prediction-label" style="font-size:1.6rem; color:#ffffff; letter-spacing:0.5px;">
+                    นายเกริกยศ โกลากุล
+                </div>
+                <div class="prediction-label" style="margin-top:6px;">รหัสนักศึกษา: 664245017</div>
+                <div class="prediction-label">หมู่เรียน: 66/43</div>
+                <div class="prediction-label">สาขา: วิทยาการคอมพิวเตอร์</div>
+                <div class="prediction-label">มหาวิทยาลัยราชภัฏนครปฐม</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+    st.write("")
+    st.subheader("วัตถุประสงค์ของโปรเจกต์")
+    st.markdown(
+        "โปรเจกต์นี้จัดทำขึ้นเพื่อฝึกฝนกระบวนการสร้างโมเดล Machine Learning "
+        "แบบครบวงจร (end-to-end) ตั้งแต่การเตรียมข้อมูล การเทรนโมเดลด้วยเทคนิค "
+        "**Ensemble Learning** (Random Forest Regressor) การประเมินผลลัพธ์ "
+        "อย่างตรงไปตรงมา ไปจนถึงการนำโมเดลไปให้ผู้ใช้งานจริงเข้าถึงได้ผ่านเว็บแอป "
+        "(Streamlit) และเผยแพร่ผ่าน GitHub — เพื่อให้เข้าใจภาพรวมของงานสาย "
+        "Data Science / Machine Learning ตั้งแต่ต้นจนจบ ไม่ใช่แค่การเทรนโมเดล "
+        "อย่างเดียว"
+    )
 
 # ------------------------------------------------------------
 # Footer
