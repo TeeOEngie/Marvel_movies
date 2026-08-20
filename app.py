@@ -2,79 +2,160 @@ import streamlit as st
 import pandas as pd
 import joblib
 
-# ============================================================
-# โหลดโมเดลที่เทรนไว้ (ต้องอยู่ path เดียวกับ app.py)
-# ============================================================
+# --- การตั้งค่าหน้าเว็บ ---
+st.set_page_config(page_title="Marvel Box Office Oracle", page_icon="🎬", layout="wide")
+
+# --- Custom CSS ตกแต่งให้สวยงาม ---
+st.markdown("""
+<style>
+    /* พื้นหลังและฟอนต์หลัก */
+    .stApp {
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        color: #e94560;
+    }
+    /* หัวข้อหลัก */
+    .main-title {
+        font-size: 3.5rem;
+        font-weight: 900;
+        text-align: center;
+        background: linear-gradient(90deg, #e94560, #f39c12);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    .sub-title {
+        text-align: center;
+        color: #a0a0a0;
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+    }
+    /* การ์ดผลลัพธ์ */
+    .result-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 30px;
+        text-align: center;
+        border: 2px solid #e94560;
+        box-shadow: 0 8px 32px 0 rgba(233, 69, 96, 0.37);
+        margin-top: 20px;
+    }
+    .result-value {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #f39c12;
+        margin: 10px 0;
+    }
+    /* ปรับแต่งปุ่ม */
+    .stButton>button {
+        background: linear-gradient(90deg, #e94560, #f39c12);
+        color: white;
+        border-radius: 30px;
+        padding: 10px 30px;
+        border: none;
+        font-weight: bold;
+        font-size: 1.1rem;
+        width: 100%;
+        transition: 0.3s;
+    }
+    .stButton>button:hover {
+        transform: scale(1.02);
+        box-shadow: 0 5px 15px rgba(233, 69, 96, 0.5);
+    }
+    /* ปรับแต่ง Sidebar */
+    [data-testid=stSidebar] {
+        background: rgba(22, 33, 62, 0.95);
+    }
+    /* ซ่อนเมนู Streamlit เดิม */
+    #MainMenu, header, footer {visibility: hidden;}
+</style>
+""", unsafe_allow_html=True)
+
+# --- หัวข้อแอป ---
+st.markdown('<p class="main-title">🎬 Marvel Box Office Oracle 🦸‍♂️</p>', unsafe_allow_html=True)
+st.markdown('<p class="sub-title">ทำนายรายได้ทั่วโลกของภาพยนตร์ Marvel ด้วยพลังของ Ensemble Random Forest</p>', unsafe_allow_html=True)
+
+# --- โหลดโมเดล ---
 @st.cache_resource
 def load_model():
-    return joblib.load("svm_student_grade_model.pkl")
+    return joblib.load('rf_model.pkl')
 
 model = load_model()
 
-# ============================================================
-# ตั้งค่าหน้าเว็บ
-# ============================================================
-st.set_page_config(page_title="ทำนายเกรดนักเรียน", page_icon="🎓", layout="centered")
-st.title("🎓 ระบบทำนายเกรดนักเรียนด้วย SVM")
-st.write("กรอกข้อมูลนักเรียนด้านล่างเพื่อทำนายเกรดสุดท้าย (Final Grade)")
+# --- รายการข้อมูลสำหรับ Dropdown (ดึงจาก Dataset) ---
+directors = ['Jon Favreau', 'Louis Leterrier', 'Kenneth Branagh', 'Joe Johnston', 'Joss Whedon', 
+             'Shane Black', 'Alan Taylor', 'Anthony Russo', 'Joe Russo', 'James Gunn', 'Peyton Reed', 
+             'Scott Derrickson', 'Jon Watts', 'Taika Waititi', 'Ryan Coogler', 'Anna Boden', 
+             'Ryan Fleck', 'Cate Shortland', 'Destin Daniel Cretton', 'Chloé Zhao', 'Sam Raimi', 
+             'Nia DaCosta', 'Shawn Levy']
 
-st.divider()
+actors = ['Robert Downey Jr.', 'Edward Norton', 'Chris Hemsworth', 'Chris Evans', 'Chris Pratt', 
+          'Paul Rudd', 'Benedict Cumberbatch', 'Tom Holland', 'Chadwick Boseman', 'Brie Larson', 
+          'Scarlett Johansson', 'Simu Liu', 'Gemma Chan', 'Letitia Wright', 'Ryan Reynolds']
 
-# ============================================================
-# ฟอร์มรับ input จากผู้ใช้
-# ============================================================
-col1, col2 = st.columns(2)
+# --- Sidebar สำหรับรับค่า Input ---
+st.sidebar.header("🎛️ สร้างภาพยนตร์ Marvel ของคุณ")
+st.sidebar.markdown("---")
 
+col1, col2 = st.sidebar.columns(2)
 with col1:
-    gender = st.selectbox("เพศ (Gender)", ["Male", "Female"])
-    study_time_hours = st.slider("ชั่วโมงอ่านหนังสือ/วัน", 0.0, 10.0, 3.5, 0.1)
-    attendance_percent = st.slider("เปอร์เซ็นต์การเข้าเรียน (%)", 0.0, 100.0, 85.0, 0.1)
-    sleep_hours = st.slider("ชั่วโมงนอน/วัน", 0.0, 12.0, 6.5, 0.1)
-    previous_grade = st.slider("คะแนนเกรดเทอมก่อน", 0.0, 100.0, 70.0, 0.1)
+    budget = st.number_input("งบประมาณสร้าง (ล้าน $)", min_value=50, max_value=500, value=200, step=10)
+    runtime = st.number_input("ความยาวภาพยนตร์ (นาที)", min_value=90, max_value=200, value=120, step=1)
+    imdb = st.slider("คะแนน IMDb", 0.0, 10.0, 7.5, 0.1)
+    rt = st.slider("คะแนน Rotten Tomatoes (%)", 0, 100, 80, 1)
 
 with col2:
-    parental_education = st.selectbox(
-        "ระดับการศึกษาของผู้ปกครอง",
-        ["High School", "Bachelors", "Masters", "PhD", "Unknown"]
-    )
-    internet_access = st.selectbox("มีอินเทอร์เน็ตใช้ที่บ้านหรือไม่", ["Yes", "No"])
-    extracurricular_activities = st.selectbox("ทำกิจกรรมนอกหลักสูตรหรือไม่", ["Yes", "No"])
-    part_time_job = st.selectbox("ทำงานพาร์ทไทม์หรือไม่", ["Yes", "No"])
+    year = st.number_input("ปี ที่เข้าฉาย", min_value=2008, max_value=2030, value=2024, step=1)
+    phase = st.selectbox("Phase", [1, 2, 3, 4, 5], index=2)
+    meta = st.slider("คะแนน Metacritic", 0, 100, 70, 1)
+    
+st.sidebar.markdown("---")
+director = st.sidebar.selectbox("ผู้กำกับ", directors)
+actor = st.sidebar.selectbox("นักแสดงนำ", actors)
 
-st.divider()
+# --- ปุ่มทำนาย ---
+st.sidebar.markdown("---")
+predict_btn = st.sidebar.button("🚀 ทำนายรายได้เลย!")
 
-# ============================================================
-# ปุ่มทำนาย
-# ============================================================
-if st.button("🔮 ทำนายเกรด", use_container_width=True):
-    input_data = pd.DataFrame([{
-        "gender": gender,
-        "study_time_hours": study_time_hours,
-        "attendance_percent": attendance_percent,
-        "sleep_hours": sleep_hours,
-        "parental_education": parental_education,
-        "internet_access": internet_access,
-        "extracurricular_activities": extracurricular_activities,
-        "part_time_job": part_time_job,
-        "previous_grade": previous_grade
-    }])
-
+# --- หน้าหลักแสดงผลลัพธ์ ---
+if predict_btn:
+    # เตรียมข้อมูลให้ตรงกับตอนที่เทรน
+    input_data = pd.DataFrame({
+        'production_budget_millions': [budget],
+        'runtime_minutes': [runtime],
+        'release_year': [year],
+        'phase_number': [phase],
+        'imdb_rating': [imdb],
+        'rotten_tomatoes': [rt],
+        'metacritic_score': [meta],
+        'director': [director],
+        'lead_actor': [actor]
+    })
+    
+    # ทำนาย
     prediction = model.predict(input_data)[0]
-
-    # ถ้าโมเดลรองรับ predict_proba (SVC(probability=True) ตอนเทรน)
-    try:
-        proba = model.predict_proba(input_data)[0]
-        proba_df = pd.DataFrame({
-            "เกรด": model.classes_,
-            "ความน่าจะเป็น": proba
-        }).sort_values("ความน่าจะเป็น", ascending=False)
-    except Exception:
-        proba_df = None
-
-    st.success(f"ผลการทำนาย: นักเรียนมีแนวโน้มได้เกรด **{prediction}**")
-
-    if proba_df is not None:
-        st.write("ความน่าจะเป็นของแต่ละเกรด:")
-        st.bar_chart(proba_df.set_index("เกรด"))
-
-st.caption("โมเดล: Support Vector Machine (SVM) | Dataset: student_performance_dataset.csv")
+    
+    # แสดงผลแบบสวยๆ
+    st.markdown(f"""
+    <div class="result-card">
+        <h2 style="color: #fff; margin-top: 0;">📊 ผลการทำนายรายได้ทั่วโลก</h2>
+        <p class="result-value">${prediction:,.2f} M</p>
+        <p style="color: #a0a0a0; font-size: 1.1rem;">
+            ภาพยนตร์เรื่องใหม่ของคุณนำแสดงโดย <b style="color:#e94560;">{actor}</b> 
+            และกำกับโดย <b style="color:#e94560;">{director}</b>
+        </p>
+        <hr style="border-color: rgba(255,255,255,0.1);">
+        <p style="color: #a0a0a0; font-size: 0.9rem;">
+            💡 <i>โมเดลวิเคราะห์จากงบประมาณ {budget}M$, ความยาว {runtime} นาที, 
+            และคะแนนรีวิวระดับตำนาน!</i>
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown("""
+    <div style="text-align: center; margin-top: 50px; color: #a0a0a0;">
+        <h3>👈 ปรับแต่งพารามิเตอร์ที่เมนูด้านซ้าย แล้วกดปุ่มทำนาย!</h3>
+        <p>ดูซิว่าภาพยนตร์ Marvel ในจินตนาการของคุณจะทำเงินได้เท่าไหร่</p>
+    </div>
+    """, unsafe_allow_html=True)
