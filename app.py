@@ -481,7 +481,7 @@ with tab_dev:
                 <div class="prediction-label" style="margin-top:6px;">รหัสนักศึกษา: 664245017</div>
                 <div class="prediction-label">หมู่เรียน: 66/43</div>
                 <div class="prediction-label">สาขา: วิทยาการคอมพิวเตอร์</div>
-                <div class="prediction-label">มหาวิทยาลัยราชภัฏนครปฐม</div>
+                <div class="prediction-label">มหาวิทยาลัย : ราชภัฏนครปฐม</div>
             </div>
             """,
             unsafe_allow_html=True,
