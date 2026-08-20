@@ -1,0 +1,21 @@
+Column,Description,Type
+movie_id,Unique movie identifier,String
+movie_title,Official movie title,String
+release_date,Release date in YYYY-MM-DD format,Date
+release_year,Release year extracted from date,Integer
+mcu_timeline_order,Chronological order in MCU timeline,Integer
+phase,MCU Phase designation,String
+phase_number,Phase number for easy sorting,Integer
+director,Director(s) of the movie,String
+lead_actor,Lead actor/actress in the movie,String
+runtime_minutes,Movie runtime in minutes,Integer
+production_budget_millions,Production budget in USD millions,Float
+worldwide_box_office_millions,Worldwide box office gross in USD millions,Float
+domestic_box_office_millions,Domestic box office gross in USD millions,Float
+profit_millions,Profit = Worldwide - Budget in USD millions,Float
+roi_percentage,Return on Investment percentage,Float
+domestic_percentage,Domestic percentage of worldwide gross,Float
+imdb_rating,IMDb user rating out of 10,Float
+rotten_tomatoes,Rotten Tomatoes critic score percentage,Float
+metacritic_score,Metacritic critic score out of 100,Integer
+storyline,Brief plot description,String

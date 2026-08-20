@@ -1,0 +1,36 @@
+{
+  "test_r2": 0.3068,
+  "test_mae_millions": 530.01,
+  "test_rmse_millions": 657.65,
+  "cv_r2_mean": -0.0443,
+  "cv_r2_std": 0.3434,
+  "best_params": {
+    "max_depth": 3,
+    "max_features": "sqrt",
+    "min_samples_leaf": 1,
+    "min_samples_split": 3,
+    "n_estimators": 100
+  },
+  "feature_importance": {
+    "imdb_rating": 0.3036,
+    "runtime_minutes": 0.2299,
+    "production_budget_millions": 0.1666,
+    "rotten_tomatoes": 0.0929,
+    "metacritic_score": 0.0922,
+    "mcu_timeline_order": 0.0525,
+    "release_year": 0.0376,
+    "phase_number": 0.0247
+  },
+  "n_movies": 34,
+  "features": [
+    "production_budget_millions",
+    "runtime_minutes",
+    "phase_number",
+    "mcu_timeline_order",
+    "release_year",
+    "imdb_rating",
+    "rotten_tomatoes",
+    "metacritic_score"
+  ],
+  "target": "worldwide_box_office_millions"
+}
