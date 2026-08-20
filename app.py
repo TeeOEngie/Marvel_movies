@@ -453,7 +453,17 @@ with tab_dev:
     col_photo, col_info = st.columns([1, 2])
 
     with col_photo:
-        st.image("dev.jpg", width=220)
+        # TODO: เปลี่ยนเป็นรูปจริงภายหลัง — วางไฟล์รูปไว้ในโฟลเดอร์เดียวกับ
+        # app.py แล้วเปลี่ยน path ด้านล่าง เช่น st.image("developer.jpg", ...)
+        st.markdown(
+            """
+            <div style="
+                width: 220px; height: 220px; border-radius: 50%;
+                background: linear-gradient(135deg, #ed1d24 0%, #8b0000 100%);
+                display: flex; align-items: center; justify-content: center;
+                font-size: 4rem; color: #ffd700; border: 3px solid #ffd700;
+                margin: 0 auto;">
+                👤
             </div>
             """,
             unsafe_allow_html=True,
@@ -471,7 +481,7 @@ with tab_dev:
                 <div class="prediction-label" style="margin-top:6px;">รหัสนักศึกษา: 664245017</div>
                 <div class="prediction-label">หมู่เรียน: 66/43</div>
                 <div class="prediction-label">สาขา: วิทยาการคอมพิวเตอร์</div>
-                <div class="prediction-label">มหาวิทยาลัย : ราชภัฏนครปฐม</div>
+                <div class="prediction-label">มหาวิทยาลัยราชภัฏนครปฐม</div>
             </div>
             """,
             unsafe_allow_html=True,
