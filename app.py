@@ -1,14 +1,15 @@
 # ============================================================
 # app.py
-# Marvel Box Office Predictor — Streamlit app
+# Marvel Box Office Predictor — แอป Streamlit (ภาษาไทย)
 #
-# Loads the Random Forest model trained in train_model.py and
-# lets the user predict a movie's worldwide box office gross
-# from budget, runtime, ratings, and MCU phase info.
+# โหลดโมเดล Random Forest ที่เทรนไว้จาก train_model.py แล้วให้ผู้ใช้
+# ทำนายรายได้รวมทั่วโลก (worldwide box office) ของหนัง จากงบสร้าง,
+# ความยาวหนัง, คะแนนรีวิว และข้อมูลเฟส MCU
 #
-# Repo layout expected:
+# โครงสร้าง repo ที่ต้องมี:
 #   app.py
 #   requirements.txt
+#   runtime.txt
 #   marvel_movies_dataset.csv
 #   model/
 #     rf_model.pkl
@@ -23,29 +24,29 @@ import joblib
 import numpy as np
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 import streamlit as st
 
 # ------------------------------------------------------------
-# Page config (must be the first Streamlit call)
+# ตั้งค่าหน้าเพจ (ต้องเป็นคำสั่ง Streamlit อันแรกสุด)
 # ------------------------------------------------------------
 st.set_page_config(
-    page_title="Marvel Box Office Predictor",
+    page_title="เครื่องมือทำนายรายได้หนัง Marvel",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 # ------------------------------------------------------------
-# Custom CSS — Marvel-ish red / gold theme
+# Custom CSS — ธีมแดง-ทอง สไตล์ Marvel
+# ใช้ฟอนต์ Noto Sans Thai เพื่อให้ตัวอักษรไทยแสดงผลสวย
 # ------------------------------------------------------------
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+Thai:wght@400;600;700&display=swap');
 
     html, body, [class*="css"]  {
-        font-family: 'Inter', sans-serif;
+        font-family: 'Noto Sans Thai', 'Inter', sans-serif;
     }
 
     .main {
@@ -53,9 +54,9 @@ st.markdown(
     }
 
     .hero-title {
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 3.4rem;
-        letter-spacing: 2px;
+        font-family: 'Bebas Neue', 'Noto Sans Thai', sans-serif;
+        font-size: 2.8rem;
+        letter-spacing: 1px;
         background: linear-gradient(90deg, #ed1d24, #ffd700);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -66,7 +67,7 @@ st.markdown(
     .hero-subtitle {
         color: #b8b8c8;
         font-size: 1.05rem;
-        margin-top: -8px;
+        margin-top: -4px;
     }
 
     div[data-testid="stMetric"] {
@@ -91,8 +92,8 @@ st.markdown(
     }
 
     .prediction-value {
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 3rem;
+        font-family: 'Bebas Neue', 'Noto Sans Thai', sans-serif;
+        font-size: 2.8rem;
         color: #ffffff;
         letter-spacing: 1px;
     }
@@ -100,8 +101,7 @@ st.markdown(
     .prediction-label {
         color: #ffe4b5;
         font-size: 0.95rem;
-        text-transform: uppercase;
-        letter-spacing: 2px;
+        letter-spacing: 1px;
     }
 
     .stButton>button {
@@ -135,7 +135,7 @@ st.markdown(
 
 
 # ------------------------------------------------------------
-# Data / model loading (cached so it only runs once per session)
+# โหลดข้อมูล / โมเดล (cache ไว้ให้รันแค่ครั้งเดียวต่อ session)
 # ------------------------------------------------------------
 @st.cache_resource
 def load_model():
@@ -163,16 +163,16 @@ df = load_dataset()
 # ------------------------------------------------------------
 st.markdown('<p class="hero-title">MARVEL BOX OFFICE PREDICTOR</p>', unsafe_allow_html=True)
 st.markdown(
-    '<p class="hero-subtitle">An Ensemble Random Forest Regressor trained on the MCU box office dataset</p>',
+    '<p class="hero-subtitle">ทำนายรายได้รวมทั่วโลกของหนัง MCU ด้วย Ensemble Random Forest Regressor</p>',
     unsafe_allow_html=True,
 )
 st.write("")
 
 if not model_loaded:
     st.error(
-        "Model files not found. Make sure `model/rf_model.pkl`, "
-        "`model/feature_columns.pkl`, and `model/metrics.json` "
-        "(produced by `train_model.py`) are in the repo."
+        "ไม่พบไฟล์โมเดล กรุณาตรวจสอบว่ามี `model/rf_model.pkl`, "
+        "`model/feature_columns.pkl`, และ `model/metrics.json` "
+        "(ที่สร้างจาก `train_model.py`) อยู่ใน repo แล้ว"
     )
     st.stop()
 
@@ -180,17 +180,18 @@ if not model_loaded:
 # Tabs
 # ------------------------------------------------------------
 tab_predict, tab_explore, tab_model = st.tabs(
-    ["🔮 Predict", "📊 Explore Dataset", "🧠 Model Details"]
+    ["🔮 ทำนาย", "📊 สำรวจข้อมูล", "🧠 รายละเอียดโมเดล"]
 )
 
 # ============================================================
-# TAB 1 — Predict
+# TAB 1 — ทำนาย
 # ============================================================
 with tab_predict:
     st.markdown(
-        '<div class="caveat-box">⚠️ This model was trained on only 34 movies. '
-        "Treat predictions as a fun estimate driven by historical MCU patterns, "
-        "not a reliable financial forecast — see the Model Details tab for honest metrics.</div>",
+        '<div class="caveat-box">⚠️ โมเดลนี้เทรนจากข้อมูลแค่ 34 เรื่องเท่านั้น '
+        "ควรมองผลลัพธ์เป็นการประมาณแบบสนุกๆ ที่อิงจากรูปแบบของหนัง MCU ในอดีต "
+        "ไม่ใช่การพยากรณ์ทางการเงินที่แม่นยำ — ดูตัวเลขจริงได้ที่แท็บ "
+        "รายละเอียดโมเดล</div>",
         unsafe_allow_html=True,
     )
     st.write("")
@@ -198,35 +199,35 @@ with tab_predict:
     col_form, col_result = st.columns([1.1, 1])
 
     with col_form:
-        st.subheader("Movie inputs")
+        st.subheader("ข้อมูลหนัง")
 
         c1, c2 = st.columns(2)
         with c1:
             budget = st.number_input(
-                "Production budget ($M)", min_value=1.0, max_value=1000.0,
+                "งบสร้าง (ล้านดอลลาร์)", min_value=1.0, max_value=1000.0,
                 value=200.0, step=5.0,
             )
             runtime = st.number_input(
-                "Runtime (minutes)", min_value=60, max_value=240, value=130, step=1
+                "ความยาวหนัง (นาที)", min_value=60, max_value=240, value=130, step=1
             )
-            phase_number = st.selectbox("MCU Phase", [1, 2, 3, 4, 5, 6], index=4)
+            phase_number = st.selectbox("เฟส MCU", [1, 2, 3, 4, 5, 6], index=4)
             timeline_order = st.number_input(
-                "Timeline order (release sequence #)", min_value=1, max_value=60,
+                "ลำดับการฉาย (timeline order)", min_value=1, max_value=60,
                 value=int(df["mcu_timeline_order"].max()) + 1, step=1,
             )
 
         with c2:
             release_year = st.number_input(
-                "Release year", min_value=2008, max_value=2030, value=2026, step=1
+                "ปีที่ฉาย", min_value=2008, max_value=2030, value=2026, step=1
             )
-            imdb_rating = st.slider("IMDb rating", 0.0, 10.0, 7.0, 0.1)
-            rotten_tomatoes = st.slider("Rotten Tomatoes score (%)", 0, 100, 75, 1)
-            metacritic_score = st.slider("Metacritic score", 0, 100, 65, 1)
+            imdb_rating = st.slider("คะแนน IMDb", 0.0, 10.0, 7.0, 0.1)
+            rotten_tomatoes = st.slider("คะแนน Rotten Tomatoes (%)", 0, 100, 75, 1)
+            metacritic_score = st.slider("คะแนน Metacritic", 0, 100, 65, 1)
 
-        predict_clicked = st.button("🎬 Predict Box Office")
+        predict_clicked = st.button("🎬 ทำนายรายได้")
 
     with col_result:
-        st.subheader("Prediction")
+        st.subheader("ผลการทำนาย")
         if predict_clicked:
             input_row = pd.DataFrame([{
                 "production_budget_millions": budget,
@@ -241,18 +242,18 @@ with tab_predict:
 
             prediction = model.predict(input_row)[0]
 
-            # Uncertainty estimate: spread across the individual trees
-            # in the forest (this is what makes it an *ensemble* —
-            # every tree votes and we can see how much they disagree).
+            # ประมาณช่วงความไม่แน่นอน: ดูความกระจายของค่าที่แต่ละต้นไม้
+            # ในป่าทำนายไว้ (นี่คือหัวใจของ "ensemble" — ทุกต้นไม้โหวต
+            # แล้วเราดูได้ว่าแต่ละต้นเห็นต่างกันแค่ไหน)
             tree_preds = np.array([t.predict(input_row)[0] for t in model.estimators_])
             lower, upper = np.percentile(tree_preds, [10, 90])
 
             st.markdown(
                 f"""
                 <div class="prediction-card">
-                    <div class="prediction-label">Predicted Worldwide Gross</div>
+                    <div class="prediction-label">รายได้รวมทั่วโลกที่คาดการณ์</div>
                     <div class="prediction-value">${prediction:,.0f}M</div>
-                    <div class="prediction-label">80% range: ${lower:,.0f}M – ${upper:,.0f}M</div>
+                    <div class="prediction-label">ช่วงความเป็นไปได้ 80%: ${lower:,.0f}M – ${upper:,.0f}M</div>
                 </div>
                 """,
                 unsafe_allow_html=True,
@@ -260,37 +261,37 @@ with tab_predict:
 
             roi_est = ((prediction - budget) / budget) * 100
             m1, m2 = st.columns(2)
-            m1.metric("Est. Profit", f"${prediction - budget:,.0f}M")
-            m2.metric("Est. ROI", f"{roi_est:,.0f}%")
+            m1.metric("กำไรโดยประมาณ", f"${prediction - budget:,.0f}M")
+            m2.metric("ROI โดยประมาณ", f"{roi_est:,.0f}%")
 
-            # Tree-vote distribution — shows the "ensemble" at work
+            # กราฟกระจายผลโหวตของแต่ละต้นไม้ — แสดงให้เห็น "ensemble" ทำงานจริง
             fig = px.histogram(
                 tree_preds, nbins=20,
-                labels={"value": "Predicted gross ($M)"},
-                title="Prediction across all trees in the forest",
+                labels={"value": "รายได้ที่ทำนาย ($M)"},
+                title="ผลการทำนายจากต้นไม้ทุกต้นในป่า (forest)",
                 color_discrete_sequence=["#ed1d24"],
             )
             fig.add_vline(x=prediction, line_color="#ffd700", line_width=3,
-                           annotation_text="Ensemble average")
+                           annotation_text="ค่าเฉลี่ยของ Ensemble")
             fig.update_layout(
                 template="plotly_dark", plot_bgcolor="rgba(0,0,0,0)",
                 paper_bgcolor="rgba(0,0,0,0)", showlegend=False, height=280,
             )
             st.plotly_chart(fig, use_container_width=True)
         else:
-            st.info("Fill in the movie details and click **Predict Box Office**.")
+            st.info("กรอกข้อมูลหนังทางซ้าย แล้วกด **ทำนายรายได้**")
 
 # ============================================================
-# TAB 2 — Explore Dataset
+# TAB 2 — สำรวจข้อมูล
 # ============================================================
 with tab_explore:
-    st.subheader("MCU Movies Dataset")
+    st.subheader("ชุดข้อมูลหนัง MCU")
 
     k1, k2, k3, k4 = st.columns(4)
-    k1.metric("Movies", len(df))
-    k2.metric("Avg. Budget", f"${df['production_budget_millions'].mean():,.0f}M")
-    k3.metric("Avg. Worldwide Gross", f"${df['worldwide_box_office_millions'].mean():,.0f}M")
-    k4.metric("Avg. IMDb Rating", f"{df['imdb_rating'].mean():.1f}")
+    k1.metric("จำนวนหนัง", len(df))
+    k2.metric("งบสร้างเฉลี่ย", f"${df['production_budget_millions'].mean():,.0f}M")
+    k3.metric("รายได้รวมเฉลี่ย", f"${df['worldwide_box_office_millions'].mean():,.0f}M")
+    k4.metric("คะแนน IMDb เฉลี่ย", f"{df['imdb_rating'].mean():.1f}")
 
     st.write("")
     left, right = st.columns(2)
@@ -299,7 +300,7 @@ with tab_explore:
         fig1 = px.bar(
             df.sort_values("release_date"),
             x="movie_title", y="worldwide_box_office_millions",
-            color="phase", title="Worldwide box office by movie",
+            color="phase", title="รายได้รวมทั่วโลกแยกตามหนัง",
         )
         fig1.update_layout(template="plotly_dark", plot_bgcolor="rgba(0,0,0,0)",
                             paper_bgcolor="rgba(0,0,0,0)", xaxis_tickangle=-60, height=420)
@@ -309,7 +310,7 @@ with tab_explore:
         fig2 = px.scatter(
             df, x="production_budget_millions", y="worldwide_box_office_millions",
             size="imdb_rating", color="phase", hover_name="movie_title",
-            title="Budget vs. worldwide gross",
+            title="งบสร้าง เทียบกับ รายได้รวมทั่วโลก",
         )
         fig2.update_layout(template="plotly_dark", plot_bgcolor="rgba(0,0,0,0)",
                             paper_bgcolor="rgba(0,0,0,0)", height=420)
@@ -317,25 +318,25 @@ with tab_explore:
 
     fig3 = px.line(
         df.sort_values("release_date"), x="release_date", y="imdb_rating",
-        markers=True, title="IMDb rating over time",
+        markers=True, title="คะแนน IMDb ตามช่วงเวลา",
     )
     fig3.update_layout(template="plotly_dark", plot_bgcolor="rgba(0,0,0,0)",
                         paper_bgcolor="rgba(0,0,0,0)", height=350)
     st.plotly_chart(fig3, use_container_width=True)
 
-    st.subheader("Raw data")
+    st.subheader("ข้อมูลดิบ")
     st.dataframe(df, use_container_width=True, hide_index=True)
 
 # ============================================================
-# TAB 3 — Model Details
+# TAB 3 — รายละเอียดโมเดล
 # ============================================================
 with tab_model:
     st.subheader("Ensemble Random Forest Regressor")
     st.markdown(
-        "A Random Forest is itself an **ensemble** method: it trains many "
-        "decision trees on bootstrapped samples of the data (bagging) and "
-        "averages their individual predictions, which reduces overfitting "
-        "compared to any single tree."
+        "Random Forest เป็นโมเดลแบบ **ensemble** ในตัวเองอยู่แล้ว: "
+        "มันเทรน decision tree จำนวนมากจากตัวอย่างข้อมูลที่สุ่มมา (bagging) "
+        "แล้วเฉลี่ยผลการทำนายของแต่ละต้น ซึ่งช่วยลดปัญหา overfitting "
+        "เมื่อเทียบกับการใช้ต้นไม้แค่ต้นเดียว"
     )
 
     c1, c2, c3 = st.columns(3)
@@ -346,18 +347,18 @@ with tab_model:
     st.markdown(
         f"""
         <div class="caveat-box">
-        With only <b>{metrics['n_movies']} movies</b> in the dataset, these metrics
-        are noisy — 5-fold cross-validated R² averaged
-        <b>{metrics['cv_r2_mean']:.2f} ± {metrics['cv_r2_std']:.2f}</b> across folds.
-        This model is best treated as a demo of the ensemble-learning workflow,
-        not a production forecasting tool.
+        เนื่องจากข้อมูลมีแค่ <b>{metrics['n_movies']} เรื่อง</b> ค่าตัวชี้วัดเหล่านี้
+        จึงค่อนข้างแกว่ง — ค่า R² จากการทำ 5-fold cross-validation
+        เฉลี่ยอยู่ที่ <b>{metrics['cv_r2_mean']:.2f} ± {metrics['cv_r2_std']:.2f}</b>
+        ควรมองโมเดลนี้เป็นตัวอย่างสาธิตขั้นตอนการทำ ensemble learning
+        มากกว่าเครื่องมือพยากรณ์ที่ใช้งานจริงได้แม่นยำ
         </div>
         """,
         unsafe_allow_html=True,
     )
 
     st.write("")
-    st.subheader("Feature importance")
+    st.subheader("ความสำคัญของแต่ละตัวแปร (Feature Importance)")
     importance_df = (
         pd.DataFrame(metrics["feature_importance"].items(), columns=["feature", "importance"])
         .sort_values("importance", ascending=True)
@@ -370,7 +371,7 @@ with tab_model:
                         paper_bgcolor="rgba(0,0,0,0)", height=380, coloraxis_showscale=False)
     st.plotly_chart(fig4, use_container_width=True)
 
-    st.subheader("Best hyperparameters (from GridSearchCV)")
+    st.subheader("ค่า Hyperparameter ที่ดีที่สุด (จาก GridSearchCV)")
     st.json(metrics["best_params"])
 
 # ------------------------------------------------------------
@@ -378,6 +379,6 @@ with tab_model:
 # ------------------------------------------------------------
 st.divider()
 st.caption(
-    "Built with scikit-learn RandomForestRegressor + Streamlit · "
-    "Trained in Google Colab on the Marvel Movies dataset."
+    "สร้างด้วย scikit-learn RandomForestRegressor + Streamlit · "
+    "เทรนโมเดลใน Google Colab จากชุดข้อมูล Marvel Movies"
 )
